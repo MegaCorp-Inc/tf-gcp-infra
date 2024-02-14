@@ -10,7 +10,7 @@ data "google_compute_zones" "this" {
 
 locals {
   type  = ["public", "private"]
-  zones = data.google_compute_zones.this.names
+  zones = 
 }
 
 module "vpc" {
