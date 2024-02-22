@@ -61,13 +61,13 @@ variable "dest_range" {
 variable "image_path" {
   type        = string
   description = "The image path for the instance"
-  default     = "projects/megamindcorp/global/images/webapp-centos-stream-8-a3-v5"
+  default     = "projects/megamindcorp/global/images/webapp-centos-stream-8-a3-v5-20240221211859"
 }
 
 variable "ports" {
   type        = list(string)
   description = "The ports to open"
-  default     = ["22", "80", "443", "3000"]
+  default     = ["3000"]
 }
 
 variable "machine_type" {
