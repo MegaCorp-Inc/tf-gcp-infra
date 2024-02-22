@@ -6,11 +6,13 @@ resource "google_compute_instance" "webapp-instance" {
   boot_disk {
     initialize_params {
       image = var.image_path
+      size  = 100
+      type  = "pd-balanced"
     }
   }
 
   network_interface {
-    network = var.network
+    network    = var.network
     subnetwork = var.subnet
     access_config {}
   }
