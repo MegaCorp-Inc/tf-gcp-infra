@@ -10,10 +10,22 @@ variable "region" {
   default     = "us-east1"
 }
 
+variable "zone" {
+  type        = string
+  description = "Zone of the infrastructure"
+  default     = "us-east1-b"
+}
+
 variable "vpc_name" {
   type        = string
   description = "Name of the infrastructure"
   default     = "megacorp"
+}
+
+variable "vpc_type" {
+  type        = string
+  description = "Type of the VPC"
+  default     = "REGIONAL"
 }
 
 variable "webapp_name" {
@@ -44,4 +56,22 @@ variable "dest_range" {
   type        = string
   description = "Destination range of the route"
   default     = "0.0.0.0/0"
+}
+
+variable "image_path" {
+  type        = string
+  description = "The image path for the instance"
+  default     = "projects/megamindcorp/global/images/webapp-centos-stream-8-a3-v5-20240221211859"
+}
+
+variable "ports" {
+  type        = list(string)
+  description = "The ports to open"
+  default     = ["3000"]
+}
+
+variable "machine_type" {
+  type        = string
+  description = "The machine type"
+  default     = "e2-medium"
 }
