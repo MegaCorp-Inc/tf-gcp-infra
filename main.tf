@@ -16,6 +16,7 @@ locals {
 module "vpc" {
   source   = "./vpc"
   vpc_name = var.vpc_name
+  vpc_type = var.vpc_type
 }
 
 module "subnet" {
@@ -33,4 +34,21 @@ module "routes" {
   project_id     = var.project_id
   dest_range     = var.dest_range
   vpc_network_id = module.vpc.vpc_network_id
+}
+
+module "compute" {
+  source     = "./compute"
+  project_id = var.project_id
+  region     = var.region
+  zone       = var.zone
+  network    = module.vpc.vpc_network_id
+  subnet     = module.subnet.subnet_id
+  image_path = var.image_path
+}
+
+module "firewall" {
+  source     = "./firewall"
+  project_id = var.project_id
+  network    = module.vpc.vpc_network_id
+  ports      = var.ports
 }

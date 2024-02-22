@@ -3,5 +3,8 @@ resource "google_compute_subnetwork" "webapp_subnet" {
   ip_cidr_range            = var.ip_cidr_range_webapp
   region                   = var.region
   network                  = var.vpc_network_id
-  private_ip_google_access = true
+}
+
+output "subnet_id" {
+  value = google_compute_subnetwork.webapp_subnet.id
 }
