@@ -5,6 +5,6 @@ resource "google_compute_subnetwork" "webapp_subnet" {
   network                  = var.vpc_network_id
 }
 
-output "subnet_id" {
+output "webapp_subnet" {
   value = google_compute_subnetwork.webapp_subnet.id
 }

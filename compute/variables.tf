@@ -23,7 +23,27 @@ variable "subnet" {
   type        = string
 }
 
-variable "image_path" {
+variable "image_name" {
   description = "The image path for the instance"
+  type        = string
+}
+
+variable "db_name" {
+  description = "Name of the database"
+  type        = string
+}
+
+variable "db_password"{
+  description = "Password of the database"
+  type        = string
+}
+
+variable "db_user"{
+  description = "User of the database"
+  type        = string
+}
+
+variable "private_ip"{
+  description = "Private IP of the database"
   type        = string
 }
