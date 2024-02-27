@@ -4,3 +4,7 @@ resource "google_compute_subnetwork" "db_subnet" {
   region                   = var.region
   network                  = var.vpc_network_id
 }
+
+output "db_subnet" {
+  value = google_compute_subnetwork.db_subnet
+}

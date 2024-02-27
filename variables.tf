@@ -1,7 +1,7 @@
 variable "project_id" {
   type        = string
   description = "Project ID"
-  default     = "megamindcorp"
+  default     = "megamindcorp-dev"
 }
 
 variable "region" {
@@ -58,20 +58,38 @@ variable "dest_range" {
   default     = "0.0.0.0/0"
 }
 
-variable "image_path" {
+variable "image_name" {
   type        = string
   description = "The image path for the instance"
-  default     = "projects/megamindcorp/global/images/webapp-centos-stream-8-a3-v5-20240221211859"
+  default     = "webapp-centos-stream-8-a4-v1-20240227204431"
 }
 
 variable "ports" {
   type        = list(string)
   description = "The ports to open"
-  default     = ["3000"]
+  default     = ["6969"]
 }
 
 variable "machine_type" {
   type        = string
   description = "The machine type"
   default     = "e2-medium"
+}
+
+variable "tier" {
+  type        = string
+  description = "The tier of the database"
+  default     = "db-f1-micro"
+}
+
+variable "availability_type" {
+  type        = string
+  description = "The availability type of the database"
+  default     = "REGIONAL"  
+}
+
+variable "disk_type" {
+  type        = string
+  description = "The disk type"
+  default     = "pd-balanced"
 }
