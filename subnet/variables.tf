@@ -1,5 +1,5 @@
-variable region {
-  type       = string
+variable "region" {
+  type = string
 }
 
 variable "webapp_name" {

@@ -47,17 +47,17 @@ module "sql_db" {
 }
 
 module "compute" {
-  source     = "./compute"
-  project_id = var.project_id
-  region     = var.region
-  zone       = var.zone
-  network    = module.vpc.vpc_network_id
-  subnet     = module.subnet.webapp_subnet.id
-  image_name = var.image_name
-  db_name    = module.sql_db.db_name
-  db_user    = module.sql_db.db_user
+  source      = "./compute"
+  project_id  = var.project_id
+  region      = var.region
+  zone        = var.zone
+  network     = module.vpc.vpc_network_id
+  subnet      = module.subnet.webapp_subnet
+  image_name  = var.image_name
+  db_name     = module.sql_db.db_name
+  db_user     = module.sql_db.db_user
   db_password = module.sql_db.db_password
-  private_ip = module.sql_db.host_ip
+  private_ip  = module.sql_db.host_ip
 }
 
 module "firewall" {

@@ -33,17 +33,17 @@ variable "db_name" {
   type        = string
 }
 
-variable "db_password"{
+variable "db_password" {
   description = "Password of the database"
   type        = string
 }
 
-variable "db_user"{
+variable "db_user" {
   description = "User of the database"
   type        = string
 }
 
-variable "private_ip"{
+variable "private_ip" {
   description = "Private IP of the database"
   type        = string
 }
