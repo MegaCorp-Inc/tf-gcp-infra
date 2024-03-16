@@ -1,14 +1,14 @@
 variable "project_id" {
   description = "The project ID"
-  type = string
+  type        = string
 }
 
 variable "network" {
   description = "The VPC network"
-  type = string
+  type        = string
 }
 
 variable "ports" {
   description = "The ports to open"
-  type = list(string)
+  type        = list(string)
 }

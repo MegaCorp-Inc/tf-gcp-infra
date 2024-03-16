@@ -1,6 +1,6 @@
 resource "google_sql_database" "database" {
-  name     = "webapp"
-  instance = google_sql_database_instance.this.name
+  name            = "webapp-1"
+  instance        = google_sql_database_instance.this.name
   deletion_policy = "ABANDON"
 }
 
@@ -12,15 +12,15 @@ resource "google_sql_database_instance" "this" {
   name             = "megacorp-db-instance-db8fb074"
   database_version = "POSTGRES_15"
   settings {
-    tier    = var.tier
+    tier = var.tier
     ip_configuration {
       psc_config {
-        psc_enabled = true
+        psc_enabled               = true
         allowed_consumer_projects = [var.project_id]
       }
       ipv4_enabled = false
     }
-    availability_type = var.availability_type
+    availability_type           = var.availability_type
     deletion_protection_enabled = false
   }
   deletion_protection = false
@@ -53,10 +53,11 @@ resource "random_password" "this" {
 }
 
 resource "google_sql_user" "user" {
-  name     = "megamind"
-  instance = google_sql_database_instance.this.name
-  password = random_password.this.result
-  depends_on = [ google_sql_database_instance.this ]
+  name       = "megamind"
+  instance   = google_sql_database_instance.this.name
+  password   = random_password.this.result
+  depends_on = [google_sql_database_instance.this]
+  deletion_policy = "ABANDON"
 }
 
 
@@ -64,11 +65,11 @@ output "db_name" {
   value = google_sql_database.database.name
 }
 
-output "db_password"{
+output "db_password" {
   value = random_password.this.result
 }
 
-output "db_user"{
+output "db_user" {
   value = google_sql_user.user.name
 }
 

@@ -61,7 +61,7 @@ variable "dest_range" {
 variable "image_name" {
   type        = string
   description = "The image path for the instance"
-  default     = "webapp-centos-stream-8-a4-v1-20240227204431"
+  default     = "webapp-centos-stream-8-a4-v1-20240316033315"
 }
 
 variable "ports" {
@@ -85,7 +85,7 @@ variable "tier" {
 variable "availability_type" {
   type        = string
   description = "The availability type of the database"
-  default     = "REGIONAL"  
+  default     = "REGIONAL"
 }
 
 variable "disk_type" {
