@@ -1,56 +1,65 @@
-# Terraform GCP Infrastructure
+# Terraform Configuration for GCP Infrastructure
 
-This repository is dedicated to maintaining Terraform configurations for deploying infrastructure on Google Cloud Platform (GCP).
+Welcome to our Terraform configuration repository dedicated to deploying infrastructure on Google Cloud Platform (GCP). Below, you'll find comprehensive details about the services activated, current configurations, steps to follow for managing infrastructure, and key takeaways from previous assignments.
 
 ## Services Activated on GCP
+
+Our Terraform configuration activates the following services on Google Cloud Platform:
 
 - Compute Engine API
 - VPC
 - Firewall
 - Service Networking API
+- Cloud Build API
+- Cloud Functions API
+- Cloud Logging API
+- Eventarc API
+- Cloud Pub/Sub API
+- Cloud Run Admin API
 
 ## Current Configuration
 
+Here's a snapshot of our current configuration:
+
 - **Region**: `us-east1`
-- **IP CIDR Range for Web Application**: `69.4.20.0/24`
-- **IP CIDR Range for Database**: `4.20.69.0/24`
+- **Zone**: `us-east1-b`
+- **IP CIDR Range for Web Application**: `69.4.20.0/24` -> `10.1.0.0/24`
+- **IP CIDR Range for Database**: `4.20.69.0/24` -> `10.2.0.0/24`
+- **Firewall Rules**: Allow traffic to port `6969`
+- **Compute Instance Custom Image**: `webapp-centos-stream-8-a4-v1-20240227204431`
 
-## Steps to Follow
+## Steps to Manage Infrastructure
 
-1. **Initialize Terraform**: Run `terraform init` to initialize the modules and prepare the working directory for use.
+Follow these steps to manage the infrastructure using Terraform:
 
-2. **Validate Configuration**: Use `terraform validate` to ensure that the Terraform configuration files are syntactically valid and internally consistent.
+1. **Initialize Terraform**: Execute `terraform init` to initialize modules and prepare the working directory.
 
-3. **Plan Infrastructure Changes**: Execute `terraform plan` to review the proposed changes that Terraform will make to the infrastructure. This step provides an overview of the actions Terraform will perform based on the current configuration.
+2. **Validate Configuration**: Run `terraform validate` to ensure syntactical correctness and internal consistency of configuration files.
 
-4. **Apply Changes**: Finally, run `terraform apply` to apply the changes defined in the Terraform configuration files. This command will create or update resources on GCP according to the specified configuration.
+3. **Plan Infrastructure Changes**: Utilize `terraform plan` to review proposed changes to the infrastructure. This step offers an overview of actions Terraform will perform based on the configuration.
 
-- region - ```us-east1```
-- zone - ```us-east1-b```
-- ip_cidr_range_webapp - ```69.4.20.0/24```
-- ip_cidr_range_db - ```4.20.69.0/24```
-- firewall rules to allow traffic to port - ```6969```
-- create compute instance using custom image built using packer - current custom image -```webapp-centos-stream-8-a4-v1-20240227204431```
+4. **Apply Changes**: Execute `terraform apply` to implement changes defined in Terraform configuration files. This command creates or updates resources on GCP as specified in the configuration.
 
+## Key Takeaways and Improvements
 
-## Key Takeaways from Assignment 5
+### From Assignment 7
 
-During Assignment 5, I learned several important concepts related to networking and database management in the Google Cloud Platform (GCP). Here are the key takeaways:
+During Assignment 7, we learned important lessons and made significant improvements:
 
-1. **Cloud SQL Instance with Private IP**: I configured a Cloud SQL instance to use a private IP address instead of a public IP. This enhanced security by ensuring that the database instance is not accessible directly from the internet.
+- **IP Range Consideration**: Proper selection of IP ranges is crucial for connectivity to GCP internal services.
+- **Network Segmentation**: Adjusted subnet configurations to prevent conflicts and enhance network segmentation.
+- **Connectivity Enhancements**: Utilized VPC peering and Serverless VPC connectors for improved connectivity between services.
+- **Infrastructure Image Path Update**: Ensured to update the image path when building new infrastructure to maintain consistency.
 
-2. **Connectivity Options for Cloud SQL Instance**:
-   - **Private Service Access (PSA)**: I explored PSA, which allows accessing a private resource, such as a Cloud SQL instance, from within the same VPC network using Private Service Connect (PSC). It provides a secure and private connection without exposing the resource to the public internet.
-   - **VPC Peering**: VPC peering enables connecting two different VPC networks within GCP. Although it wasn't directly used for connecting to the Cloud SQL instance within the same GCP project's VPC, it's a valuable networking feature for interconnecting VPC networks when needed.
+### From Assignment 5
 
-3. **Private Service Connect (PSC)**: PSC is a service provided by Google Cloud that facilitates private connectivity between services within the same VPC network. By configuring PSC on the Cloud SQL instance and assigning it to an IP from a custom subnet, I ensured secure access to the database instance from within the VPC.
+From Assignment 5, we gained valuable insights into networking and database management in GCP:
 
-4. **VPC Peering**: While not directly used for accessing the Cloud SQL instance within the same GCP project's VPC, I learned about VPC peering's utility in establishing connections between different VPC networks, which can be beneficial for various networking scenarios.
+- **Cloud SQL Instance Security**: Enhanced security by configuring Cloud SQL instance with a private IP address.
+- **Connectivity Options**: Explored options like Private Service Access (PSA) and VPC peering for secure and private connections within the VPC.
+- **Private Service Connect (PSC)**: Configured PSC for private connectivity between services within the same VPC network.
+- **Firewall Tag Usage**: Utilized firewall rules based on tags for improved network security.
 
-By leveraging these networking features and best practices, I enhanced the security and reliability of database access within the Google Cloud Platform. These concepts are crucial for designing and implementing robust network architectures in cloud environments.
+By implementing these improvements and adhering to best practices, we aim to maintain a robust and secure infrastructure environment on Google Cloud Platform.
 
-## Important things
-- Firewall works on ```tags``` entirely
-- update the the ```image path``` when running trying to build new infra
-
-Following these steps ensures a systematic and controlled approach to managing infrastructure with Terraform, helping to maintain consistency and reliability across deployments.
+These steps ensure a systematic and controlled approach to managing infrastructure with Terraform, contributing to consistency and reliability across deployments.

@@ -43,13 +43,13 @@ variable "db_name" {
 variable "ip_cidr_range_webapp" {
   type        = string
   description = "List of The range of internal addresses that are owned by this subnetwork."
-  default     = "69.4.20.0/24"
+  default     = "10.0.1.0/24"
 }
 
 variable "ip_cidr_range_db" {
   type        = string
   description = "List of The range of internal addresses that are owned by this subnetwork."
-  default     = "4.20.69.0/24"
+  default     = "10.0.2.0/24"
 }
 
 variable "dest_range" {
@@ -61,13 +61,13 @@ variable "dest_range" {
 variable "image_name" {
   type        = string
   description = "The image path for the instance"
-  default     = "webapp-centos-stream-8-a4-v1-20240316033315"
+  default     = "webapp-centos-stream-8-a4-v1-20240326205933"
 }
 
 variable "ports" {
   type        = list(string)
   description = "The ports to open"
-  default     = ["6969"]
+  default     = ["6969","22"]
 }
 
 variable "machine_type" {
@@ -79,7 +79,7 @@ variable "machine_type" {
 variable "tier" {
   type        = string
   description = "The tier of the database"
-  default     = "db-f1-micro"
+  default     = "db-g1-small"
 }
 
 variable "availability_type" {

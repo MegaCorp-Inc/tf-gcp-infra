@@ -25,6 +25,15 @@ resource "google_project_iam_binding" "monitoring-metric-writer" {
   ]
 }
 
+resource "google_project_iam_binding" "pubsub-publisher" {
+  project = var.project_id
+  role    = "roles/pubsub.publisher"
+
+  members = [
+    "serviceAccount:${google_service_account.service_account.email}",
+  ]
+}
+
 resource "google_compute_instance" "webapp-instance" {
   name         = "webapp-instance-${random_id.instance_id.hex}"
   zone         = var.zone
@@ -77,4 +86,8 @@ resource "google_dns_record_set" "default" {
   rrdatas = [
     google_compute_instance.webapp-instance.network_interface[0].access_config[0].nat_ip
   ]
+}
+
+output "webapp_private_ip" {
+  value = google_compute_instance.webapp-instance.network_interface[0].network_ip
 }

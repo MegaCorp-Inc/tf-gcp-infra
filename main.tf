@@ -60,6 +60,17 @@ module "compute" {
   private_ip  = module.sql_db.host_ip
 }
 
+module "cloudfunction" {
+  source         = "./cloudfunction"
+  project_id     = var.project_id
+  db_name        = module.sql_db.db_name
+  db_user        = module.sql_db.db_user
+  db_password    = module.sql_db.db_password
+  private_ip     = module.sql_db.host_ip
+  vpc_network_id = module.vpc.vpc_network_id
+  vm_ip          = module.compute.webapp_private_ip
+}
+
 module "firewall" {
   source     = "./firewall"
   project_id = var.project_id
