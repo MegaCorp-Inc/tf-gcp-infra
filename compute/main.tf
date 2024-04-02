@@ -34,59 +34,45 @@ resource "google_project_iam_binding" "pubsub-publisher" {
   ]
 }
 
-resource "google_compute_instance" "webapp-instance" {
-  name         = "webapp-instance-${random_id.instance_id.hex}"
-  zone         = var.zone
-  machine_type = "e2-medium"
+# resource "google_compute_instance" "webapp-instance" {
+#   name         = "webapp-instance-${random_id.instance_id.hex}"
+#   zone         = var.zone
+#   machine_type = "e2-medium"
 
-  service_account {
-    scopes = ["cloud-platform"]
-    email  = google_service_account.service_account.email
-  }
+#   service_account {
+#     scopes = ["cloud-platform"]
+#     email  = google_service_account.service_account.email
+#   }
 
-  boot_disk {
-    initialize_params {
-      image = "projects/${var.project_id}/global/images/${var.image_name}"
-      size  = 100
-      type  = "pd-balanced"
-    }
-  }
+#   boot_disk {
+#     initialize_params {
+#       image = "projects/${var.project_id}/global/images/${var.image_name}"
+#       size  = 100
+#       type  = "pd-balanced"
+#     }
+#   }
 
-  network_interface {
-    network    = var.network
-    subnetwork = var.subnet
-    access_config {}
-  }
+#   network_interface {
+#     network    = var.network
+#     subnetwork = var.subnet
+#     access_config {}
+#   }
 
-  tags = ["webapp-subnet"]
+#   tags = ["webapp-subnet"]
 
-  metadata_startup_script = <<-EOF
-    touch .env
-    echo POSTGRESQL_DB=${var.db_name} >> .env
-    echo POSTGRESQL_USER=${var.db_user} >> .env
-    echo POSTGRESQL_PASSWORD=${var.db_password} >> .env
-    echo POSTGRESQL_HOST=${var.private_ip} >> .env
-    echo PORT=6969 >> .env
+#   metadata_startup_script = <<-EOF
+#     touch .env
+#     echo POSTGRESQL_DB=${var.db_name} >> .env
+#     echo POSTGRESQL_USER=${var.db_user} >> .env
+#     echo POSTGRESQL_PASSWORD=${var.db_password} >> .env
+#     echo POSTGRESQL_HOST=${var.private_ip} >> .env
+#     echo PORT=6969 >> .env
 
-    sudo mv .env /opt/webapp/.env
-    EOF
-}
+#     sudo mv .env /opt/webapp/.env
+#     EOF
+# }
 
-# fetching already created DNS zone
-data "google_dns_managed_zone" "env_dns_zone" {
-  name = "megacorp-domain"
-}
 
-# to register web-server's ip address in DNS
-resource "google_dns_record_set" "default" {
-  name         = data.google_dns_managed_zone.env_dns_zone.dns_name
-  managed_zone = data.google_dns_managed_zone.env_dns_zone.name
-  type         = "A"
-  ttl          = 300
-  rrdatas = [
-    google_compute_instance.webapp-instance.network_interface.0.network_ip
-  ]
-}
 
 resource "google_compute_instance_template" "lb-instance-template" {
   name         = "webapp-instance-${random_id.instance_id.hex}"
@@ -181,6 +167,77 @@ resource "google_compute_instance_group_manager" "default" {
   }
 }
 
+resource "random_id" "lb_id" {
+  byte_length = 4
+}
+
+resource "google_compute_managed_ssl_certificate" "default" {
+  name = "ssl-certificate-${random_id.lb_id.hex}"
+
+  managed {
+    domains = ["megamindcorp.me."]
+  }
+}
+
+module "gce-lb-https" {
+  source  = "terraform-google-modules/lb-http/google"
+  version = "~> 10.0"
+  name    = "lb-https-${random_id.lb_id.hex}"
+  project = var.project_id
+  target_tags = [
+    "webapp-subnet"
+  ]
+  firewall_networks = [var.network]
+  ssl               = true
+  ssl_certificates  = [google_compute_managed_ssl_certificate.default.self_link]
+
+  backends = {
+    default = {
+
+      protocol    = "HTTP"
+      port_name   = "http"
+      timeout_sec = 10
+      enable_cdn  = false
+
+      health_check = {
+        request_path = "/healthz"
+        port         = 6969
+      }
+
+      log_config = {
+        enable      = true
+        sample_rate = 1.0
+      }
+
+      groups = [
+        {
+          group = google_compute_instance_group_manager.default.instance_group
+        }
+      ]
+
+      iap_config = {
+        enable = false
+      }
+    }
+  }
+}
+
+# fetching already created DNS zone
+data "google_dns_managed_zone" "env_dns_zone" {
+  name = "megacorp-domain"
+}
+
+# to register web-server's ip address in DNS
+resource "google_dns_record_set" "default" {
+  name         = data.google_dns_managed_zone.env_dns_zone.dns_name
+  managed_zone = data.google_dns_managed_zone.env_dns_zone.name
+  type         = "A"
+  ttl          = 300
+  rrdatas = [
+    module.gce-lb-https.external_ip
+  ]
+}
+
 output "webapp_private_ip" {
-  value = google_compute_instance.webapp-instance.network_interface.0.network_ip
+  value = module.gce-lb-https.external_ip
 }
