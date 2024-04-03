@@ -34,45 +34,14 @@ resource "google_project_iam_binding" "pubsub-publisher" {
   ]
 }
 
-# resource "google_compute_instance" "webapp-instance" {
-#   name         = "webapp-instance-${random_id.instance_id.hex}"
-#   zone         = var.zone
-#   machine_type = "e2-medium"
-
-#   service_account {
-#     scopes = ["cloud-platform"]
-#     email  = google_service_account.service_account.email
-#   }
-
-#   boot_disk {
-#     initialize_params {
-#       image = "projects/${var.project_id}/global/images/${var.image_name}"
-#       size  = 100
-#       type  = "pd-balanced"
-#     }
-#   }
-
-#   network_interface {
-#     network    = var.network
-#     subnetwork = var.subnet
-#     access_config {}
-#   }
-
-#   tags = ["webapp-subnet"]
-
-#   metadata_startup_script = <<-EOF
-#     touch .env
-#     echo POSTGRESQL_DB=${var.db_name} >> .env
-#     echo POSTGRESQL_USER=${var.db_user} >> .env
-#     echo POSTGRESQL_PASSWORD=${var.db_password} >> .env
-#     echo POSTGRESQL_HOST=${var.private_ip} >> .env
-#     echo PORT=6969 >> .env
-
-#     sudo mv .env /opt/webapp/.env
-#     EOF
-# }
-
-
+resource "google_pubsub_topic_iam_binding" "binding" {
+  project = var.project_id
+  topic   = "verify-email"
+  role    = "roles/pubsub.publisher"
+  members = [
+    "serviceAccount:${google_service_account.service_account.email}",
+  ]
+}
 
 resource "google_compute_instance_template" "lb-instance-template" {
   name         = "webapp-instance-${random_id.instance_id.hex}"
@@ -190,6 +159,8 @@ module "gce-lb-https" {
   firewall_networks = [var.network]
   ssl               = true
   ssl_certificates  = [google_compute_managed_ssl_certificate.default.self_link]
+
+  http_forward = false
 
   backends = {
     default = {
