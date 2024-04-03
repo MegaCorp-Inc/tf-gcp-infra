@@ -160,7 +160,7 @@ module "gce-lb-https" {
   ssl               = true
   ssl_certificates  = [google_compute_managed_ssl_certificate.default.self_link]
 
-  http_forward = false
+  http_forward   = false
 
   backends = {
     default = {
