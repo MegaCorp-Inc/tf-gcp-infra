@@ -39,6 +39,13 @@ resource "google_pubsub_topic" "topic" {
   name = "verify-email"
 }
 
+// pubsun subscription
+
+resource "google_pubsub_subscription" "subscription" {
+  name  = "verify-email-subscription"
+  topic = google_pubsub_topic.topic.name
+}
+
 resource "google_storage_bucket" "bucket" {
   name                        = "${var.project_id}-source-${random_id.default.hex}" # Every bucket name must be globally unique
   location                    = "US"
@@ -61,7 +68,7 @@ resource "google_cloudfunctions2_function" "function" {
     runtime     = "nodejs20"
     entry_point = "verifyEmailPubsub" # Set the entry point 
     environment_variables = {
-      CHECK_ENV           = "BUILD"
+      CHECK_ENV = "BUILD"
     }
     source {
 
@@ -92,6 +99,7 @@ resource "google_cloudfunctions2_function" "function" {
     all_traffic_on_latest_revision = true
     service_account_email          = google_service_account.account.email
     vpc_connector                  = google_vpc_access_connector.cloud_function.id
+    vpc_connector_egress_settings  = "PRIVATE_RANGES_ONLY"
   }
 
   event_trigger {
