@@ -61,13 +61,13 @@ variable "dest_range" {
 variable "image_name" {
   type        = string
   description = "The image path for the instance"
-  default     = "webapp-centos-stream-8-a4-v1-20240401230036"
+  default     = "webapp-centos-stream-8-a4-v1-20240403203055"
 }
 
 variable "ports" {
   type        = list(string)
   description = "The ports to open"
-  default     = ["6969","22"]
+  default     = ["6969", "22"]
 }
 
 variable "machine_type" {

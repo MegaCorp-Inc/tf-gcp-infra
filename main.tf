@@ -29,12 +29,12 @@ module "subnet" {
   vpc_network_id       = module.vpc.vpc_network_id
 }
 
-# module "routes" {
-#   source         = "./routes"
-#   project_id     = var.project_id
-#   dest_range     = var.dest_range
-#   vpc_network_id = module.vpc.vpc_network_id
-# }
+module "routes" {
+  source         = "./routes"
+  project_id     = var.project_id
+  dest_range     = var.dest_range
+  vpc_network_id = module.vpc.vpc_network_id
+}
 
 module "sql_db" {
   source            = "./sql_db"
