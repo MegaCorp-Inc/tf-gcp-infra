@@ -1,7 +1,12 @@
 resource "google_sql_database" "database" {
-  name            = "webapp-1"
+  name            = "webapp"
   instance        = google_sql_database_instance.this.name
   deletion_policy = "ABANDON"
+}
+
+resource "google_service_account" "sql_sa" {
+  account_id   = "sql-sa"
+  display_name = "SQL Service Account"
 }
 
 resource "random_id" "this" {
@@ -9,10 +14,11 @@ resource "random_id" "this" {
 }
 
 resource "google_sql_database_instance" "this" {
-  name             = "megacorp-db-instance-${random_id.this.hex}"
-  database_version = "POSTGRES_15"
-  depends_on       = [google_service_networking_connection.private_vpc_connection]
-  region           = "us-east1"
+  name                          = "megacorp-db-instance-${random_id.this.hex}"
+  database_version              = "POSTGRES_15"
+  depends_on                    = [google_service_networking_connection.private_vpc_connection, var.kms_key]
+  region                        = "us-east1"
+
   settings {
     tier                        = var.tier
     availability_type           = var.availability_type
@@ -23,6 +29,7 @@ resource "google_sql_database_instance" "this" {
       enable_private_path_for_google_cloud_services = true
     }
   }
+  # encryption_key_name = var.kms_key
   deletion_protection = false
 }
 
@@ -45,26 +52,6 @@ resource "google_service_networking_connection" "private_vpc_connection" {
   deletion_policy         = "ABANDON"
 }
 
-
-# resource "google_compute_address" "default" {
-#   provider     = google
-#   project      = var.project_id
-#   name         = "local-psconnect-ip"
-#   address_type = "INTERNAL"
-#   subnetwork   = var.subnet
-# }
-# # [END compute_internal_ip_private_access]
-
-# # [START compute_forwarding_rule_private_access]
-# resource "google_compute_forwarding_rule" "default" {
-#   provider              = google
-#   project               = var.project_id
-#   name                  = "localrule"
-#   target                = google_sql_database_instance.this.psc_service_attachment_link
-#   network               = var.vpc_network_id
-#   ip_address            = google_compute_address.default.id
-#   load_balancing_scheme = ""
-# }
 
 resource "random_password" "this" {
   length           = 10

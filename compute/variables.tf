@@ -47,3 +47,7 @@ variable "private_ip" {
   description = "Private IP of the database"
   type        = string
 }
+
+variable "kms_key" {
+  description = "The KMS key"
+}

@@ -27,3 +27,7 @@ variable "subnet" {
   description = "The subnet"
   type        = string
 }
+
+variable "kms_key" {
+  description = "The KMS key"
+}

@@ -34,6 +34,16 @@ resource "google_project_iam_binding" "pubsub-publisher" {
   ]
 }
 
+resource "google_kms_crypto_key_iam_binding" "crypto_key" {
+  crypto_key_id = var.kms_key.id
+  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+
+  members = [
+    "serviceAccount:${google_service_account.service_account.email}",
+  ]
+}
+
+
 resource "google_pubsub_topic_iam_binding" "binding" {
   project = var.project_id
   topic   = "verify-email"
@@ -56,6 +66,9 @@ resource "google_compute_instance_template" "lb-instance-template" {
     source_image = "projects/${var.project_id}/global/images/${var.image_name}"
     disk_size_gb = 100
     disk_type    = "pd-balanced"
+    source_image_encryption_key {
+      kms_key_self_link = var.kms_key.name
+    }
   }
 
   network_interface {
@@ -64,6 +77,8 @@ resource "google_compute_instance_template" "lb-instance-template" {
   }
 
   tags = ["webapp-subnet"]
+
+
 
   metadata_startup_script = <<-EOF
     touch .env
@@ -160,7 +175,7 @@ module "gce-lb-https" {
   ssl               = true
   ssl_certificates  = [google_compute_managed_ssl_certificate.default.self_link]
 
-  http_forward   = false
+  http_forward = false
 
   backends = {
     default = {
