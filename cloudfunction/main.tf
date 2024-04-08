@@ -1,6 +1,6 @@
 resource "google_service_account" "account" {
   account_id   = "verify-email-sa"
-  display_name = "Test Service Account"
+  display_name = "CF Service Account"
 }
 
 resource "google_project_iam_binding" "function_deployer" {
@@ -30,6 +30,15 @@ resource "google_project_iam_binding" "cloudsql_admin" {
   ]
 }
 
+# resource "google_kms_crypto_key_iam_binding" "crypto_key" {
+#   crypto_key_id = var.kms_key.id
+#   role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+
+#   members = [
+#     "serviceAccount:${google_service_account.account.email}",
+#   ]
+# }
+
 resource "random_id" "default" {
   byte_length = 8
 }
@@ -39,7 +48,6 @@ resource "google_pubsub_topic" "topic" {
   name = "verify-email"
 }
 
-// pubsun subscription
 
 resource "google_pubsub_subscription" "subscription" {
   name  = "verify-email-subscription"
@@ -47,9 +55,13 @@ resource "google_pubsub_subscription" "subscription" {
 }
 
 resource "google_storage_bucket" "bucket" {
+  depends_on                  = [var.kms_key]
   name                        = "${var.project_id}-source-${random_id.default.hex}" # Every bucket name must be globally unique
   location                    = "US"
   uniform_bucket_level_access = true
+  # encryption {
+  #   default_kms_key_name = var.kms_key.name
+  # }
 }
 
 resource "google_storage_bucket_object" "object" {
@@ -90,6 +102,7 @@ resource "google_cloudfunctions2_function" "function" {
       CHECK_ENV           = "SERVICE"
       API_KEY             = "05890ef4341d57376fb162f7e452fab5-309b0ef4-9f2bdf3b"
       DOMAIN              = "mg.megamindcorp.me"
+      VERIFY_URL          = "https://megamindcorp.me/v1/user/verify/"
       POSTGRESQL_DB       = var.db_name
       POSTGRESQL_USER     = var.db_user
       POSTGRESQL_PASSWORD = var.db_password
