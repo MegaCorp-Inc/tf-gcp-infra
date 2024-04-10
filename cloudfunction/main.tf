@@ -30,14 +30,6 @@ resource "google_project_iam_binding" "cloudsql_admin" {
   ]
 }
 
-# resource "google_kms_crypto_key_iam_binding" "crypto_key" {
-#   crypto_key_id = var.kms_key.id
-#   role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
-
-#   members = [
-#     "serviceAccount:${google_service_account.account.email}",
-#   ]
-# }
 
 resource "random_id" "default" {
   byte_length = 8
@@ -54,14 +46,24 @@ resource "google_pubsub_subscription" "subscription" {
   topic = google_pubsub_topic.topic.name
 }
 
+data "google_storage_project_service_account" "gcs_account" {
+}
+
+resource "google_kms_crypto_key_iam_binding" "binding" {
+  crypto_key_id = var.kms_key.id
+  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+
+  members = ["serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}"]
+}
+
 resource "google_storage_bucket" "bucket" {
-  depends_on                  = [var.kms_key]
+  depends_on                  = [google_kms_crypto_key_iam_binding.binding]
   name                        = "${var.project_id}-source-${random_id.default.hex}" # Every bucket name must be globally unique
-  location                    = "US"
+  location                    = var.region
   uniform_bucket_level_access = true
-  # encryption {
-  #   default_kms_key_name = var.kms_key.name
-  # }
+  encryption {
+    default_kms_key_name = var.kms_key.id
+  }
 }
 
 resource "google_storage_bucket_object" "object" {
@@ -124,7 +126,7 @@ resource "google_cloudfunctions2_function" "function" {
 }
 
 resource "google_vpc_access_connector" "cloud_function" {
-  name          = "cloud-run-vpc-connector"
+  name          = "cloud-run-vpc-connector-1"
   ip_cidr_range = "10.8.0.0/28"
   network       = var.vpc_network_id
 }

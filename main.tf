@@ -39,6 +39,7 @@ module "routes" {
 module "kms" {
   source     = "./kms"
   project_id = var.project_id
+  region     = var.region
 }
 
 module "sql_db" {
@@ -49,7 +50,7 @@ module "sql_db" {
   availability_type = var.availability_type
   vpc_network_id    = module.vpc.vpc_network_id
   subnet            = module.subnet.db_subnet.id
-  kms_key           = module.kms.cloudsql_crypto_key.name
+  kms_key           = module.kms.cloudsql_crypto_key
 }
 
 
@@ -75,9 +76,10 @@ module "cloudfunction" {
   db_user        = module.sql_db.db_user
   db_password    = module.sql_db.db_password
   private_ip     = module.sql_db.host_ip
-  vpc_network_id = module.vpc.vpc_network_id
   vm_ip          = module.compute.webapp_private_ip
+  vpc_network_id = module.vpc.vpc_network_id
   kms_key        = module.kms.bucket_crypto_key
+  region         = var.region
 }
 
 module "firewall" {
