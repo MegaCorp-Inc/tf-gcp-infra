@@ -36,3 +36,8 @@ variable "vm_ip" {
 variable "kms_key" {
   description = "The KMS key"
 }
+
+variable "region" {
+  description = "The region"
+  type        = string
+}

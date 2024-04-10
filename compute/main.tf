@@ -56,6 +56,7 @@ resource "google_pubsub_topic_iam_binding" "binding" {
 resource "google_compute_instance_template" "lb-instance-template" {
   name         = "webapp-instance-${random_id.instance_id.hex}"
   machine_type = "e2-medium"
+  region       = var.region
 
   service_account {
     scopes = ["cloud-platform"]
@@ -66,8 +67,8 @@ resource "google_compute_instance_template" "lb-instance-template" {
     source_image = "projects/${var.project_id}/global/images/${var.image_name}"
     disk_size_gb = 100
     disk_type    = "pd-balanced"
-    source_image_encryption_key {
-      kms_key_self_link = var.kms_key.name
+    disk_encryption_key {
+      kms_key_self_link = var.kms_key.id
     }
   }
 

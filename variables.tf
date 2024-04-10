@@ -19,7 +19,7 @@ variable "zone" {
 variable "vpc_name" {
   type        = string
   description = "Name of the infrastructure"
-  default     = "megacorp"
+  default     = "megacorp-vpc"
 }
 
 variable "vpc_type" {
