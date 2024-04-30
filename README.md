@@ -1,3 +1,7 @@
+![gcp-tf-infra drawio](https://github.com/MegaCorp-Inc/tf-gcp-infra/assets/144539453/a649c482-bdd1-4f13-8414-f9c0205e0c4a)
+
+
+
 # Terraform Configuration for GCP Infrastructure
 
 Welcome to our Terraform configuration repository dedicated to deploying infrastructure on Google Cloud Platform (GCP). Below, you'll find comprehensive details about the services activated, current configurations, steps to follow for managing infrastructure, and key takeaways from previous assignments.
